@@ -1,0 +1,34 @@
+#ifndef MAIN_H
+#define MAIN_H
+
+#include <OgreRoot.h>
+#include <OgreWindowEventUtilities.h>
+#include <OISEvents.h>
+#include <OISInputManager.h>
+#include <OISKeyboard.h>
+#include <OISMouse.h>
+
+class ZombieClient : public Ogre::WindowEventListener, public Ogre::FrameListener{
+	public:
+		ZombieClient();
+		virtual ~ZombieClient();
+		bool go();
+	private:
+		Ogre::Root *mRoot;
+		Ogre::String mPluginsCfg;
+		Ogre::String mResourcesCfg;
+		Ogre::RenderWindow *mWindow;
+		Ogre::SceneManager *mSceneMgr;
+		Ogre::Camera *mCamera;
+		OIS::InputManager *mInputManager;
+		OIS::Mouse *mMouse;
+		OIS::Keyboard *mKeyboard;
+
+		void createScene();
+	protected:
+		virtual bool frameRenderingQueued(const Ogre::FrameEvent& evt);
+		virtual void windowResized(Ogre::RenderWindow *rw);
+		virtual void windowClosed(Ogre::RenderWindow *rw);
+};
+
+#endif
