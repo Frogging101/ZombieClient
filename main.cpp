@@ -118,6 +118,8 @@ void ZombieClient::createScene(){
 }
 
 bool ZombieClient::frameRenderingQueued(const Ogre::FrameEvent& evt){
+	static Ogre::Real mRotate = 0.13;
+	Ogre::Real mMove = 10;
 	if(mWindow->isClosed()){
 		return false;
 	}
@@ -129,10 +131,31 @@ bool ZombieClient::frameRenderingQueued(const Ogre::FrameEvent& evt){
 		return false;
 	}
 
+	//WASD move camera
+	Ogre::Vector3 cameraTrans = Ogre::Vector3::ZERO;
+
+	if(mKeyboard->isKeyDown(OIS::KC_LSHIFT)){
+		mMove = 100;
+	}
+	if(mKeyboard->isKeyDown(OIS::KC_W)){
+		cameraTrans.z -= mMove;
+	}
+	if(mKeyboard->isKeyDown(OIS::KC_S)){
+		cameraTrans.z += mMove;
+	}
+	if(mKeyboard->isKeyDown(OIS::KC_A)){
+		cameraTrans.x -= mMove;
+	}
+	if(mKeyboard->isKeyDown(OIS::KC_D)){
+		cameraTrans.x += mMove;
+	}
+
+	mSceneMgr->getSceneNode("PlayerCam")->translate(cameraTrans * evt.timeSinceLastFrame,
+			Ogre::Node::TS_LOCAL);
 	mSceneMgr->getSceneNode("PlayerCam")->yaw(
-			Ogre::Degree(-0.13 * mMouse->getMouseState().X.rel),Ogre::Node::TS_WORLD);
+			Ogre::Degree(-mRotate * mMouse->getMouseState().X.rel),Ogre::Node::TS_WORLD);
 	mSceneMgr->getSceneNode("PlayerCam")->pitch(
-			Ogre::Degree(-0.13 * mMouse->getMouseState().Y.rel),Ogre::Node::TS_LOCAL);
+			Ogre::Degree(-mRotate * mMouse->getMouseState().Y.rel),Ogre::Node::TS_LOCAL);
 
 	return true;
 }
