@@ -28,8 +28,13 @@ ZombieClient::~ZombieClient(){
 
 bool ZombieClient::go(){
 	//set config files
+#ifdef _DEBUG
+	mResourcesCfg = "resources_d.cfg";
+	mPluginsCfg = "plugins_d.cfg";
+#else
 	mResourcesCfg = "resources.cfg";
 	mPluginsCfg = "plugins.cfg";
+#endif
 
 	//Parse config file
 	Ogre::ConfigFile cf;
