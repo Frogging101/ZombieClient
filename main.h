@@ -8,6 +8,8 @@
 #include <OISKeyboard.h>
 #include <OISMouse.h>
 
+#include <btBulletDynamicsCommon.h>
+
 class ZombieClient : public Ogre::WindowEventListener, public Ogre::FrameListener{
 	public:
 		ZombieClient();
@@ -23,6 +25,12 @@ class ZombieClient : public Ogre::WindowEventListener, public Ogre::FrameListene
 		OIS::InputManager *mInputManager;
 		OIS::Mouse *mMouse;
 		OIS::Keyboard *mKeyboard;
+
+		btBroadphaseInterface* pBroadphase;
+		btCollisionDispatcher* pDispatcher;
+		btDefaultCollisionConfiguration* pCollisionConfiguration;
+		btSequentialImpulseConstraintSolver* pSolver;
+		btDiscreteDynamicsWorld* pDynamicsWorld;
 
 		void createScene();
 	protected:

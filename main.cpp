@@ -95,6 +95,17 @@ bool ZombieClient::go(){
 	mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject(OIS::OISKeyboard, false));
 	mMouse = static_cast<OIS::Mouse*>(mInputManager->createInputObject(OIS::OISMouse, false));
 
+	//Initialize Bullet for physics
+	pBroadphase = new btDbvtBroadphase();
+
+	pCollisionConfiguration = new btDefaultCollisionConfiguration();
+	pDispatcher = new btCollisionDispatcher(pCollisionConfiguration);
+ 
+	pSolver = new btSequentialImpulseConstraintSolver;
+
+	pDynamicsWorld = new btDiscreteDynamicsWorld(pDispatcher,pBroadphase,pSolver,pCollisionConfiguration);
+	pDynamicsWorld->setGravity(btVector3(0,-9.81,0));
+
 	//Set intial mouse clipping size
 	windowResized(mWindow);
 
