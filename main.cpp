@@ -122,14 +122,15 @@ bool ZombieClient::go(){
 }
 
 void ZombieClient::createScene(){
+
 	Ogre::Vector3 size;
 
-	Ogre::Entity *ogreHead = mSceneMgr->createEntity("Head","Cube.mesh");
+	Ogre::Entity *room = mSceneMgr->createEntity("Room","Cube.mesh");
 	Ogre::Entity *cube = mSceneMgr->createEntity("Cube","Cube.001.mesh");
 
-	Ogre::SceneNode *headNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("Head");
+	Ogre::SceneNode *roomNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("Room");
 	Ogre::SceneNode *cubeNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("Cube");
-	headNode->attachObject(ogreHead);
+	roomNode->attachObject(room);
 	cubeNode->attachObject(cube);
 
 	mSceneMgr->setAmbientLight(Ogre::ColourValue(0.5,0.5,0.5));
