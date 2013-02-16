@@ -68,6 +68,17 @@ bool ZombieClient::go(){
 	Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 	mSceneMgr = mRoot->createSceneManager("OctreeSceneManager");
 
+	//Initialize Bullet for physics
+	pBroadphase = new btDbvtBroadphase();
+
+	pCollisionConfiguration = new btDefaultCollisionConfiguration();
+	pDispatcher = new btCollisionDispatcher(pCollisionConfiguration);
+ 
+	pSolver = new btSequentialImpulseConstraintSolver;
+
+	pDynamicsWorld = new btDiscreteDynamicsWorld(pDispatcher,pBroadphase,pSolver,pCollisionConfiguration);
+	pDynamicsWorld->setGravity(btVector3(0,-9.81,0));
+
 	//Set up a basic scene
 	mCamera = mSceneMgr->createCamera("PlayerCam");
 	mCamera->setNearClipDistance(0.1);
@@ -95,17 +106,6 @@ bool ZombieClient::go(){
 	mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject(OIS::OISKeyboard, false));
 	mMouse = static_cast<OIS::Mouse*>(mInputManager->createInputObject(OIS::OISMouse, false));
 
-	//Initialize Bullet for physics
-	pBroadphase = new btDbvtBroadphase();
-
-	pCollisionConfiguration = new btDefaultCollisionConfiguration();
-	pDispatcher = new btCollisionDispatcher(pCollisionConfiguration);
- 
-	pSolver = new btSequentialImpulseConstraintSolver;
-
-	pDynamicsWorld = new btDiscreteDynamicsWorld(pDispatcher,pBroadphase,pSolver,pCollisionConfiguration);
-	pDynamicsWorld->setGravity(btVector3(0,-9.81,0));
-
 	//Set intial mouse clipping size
 	windowResized(mWindow);
 
@@ -122,12 +122,24 @@ bool ZombieClient::go(){
 }
 
 void ZombieClient::createScene(){
+	Ogre::Vector3 size;
+
 	Ogre::Entity *ogreHead = mSceneMgr->createEntity("Head","Cube.mesh");
+	Ogre::Entity *cube = mSceneMgr->createEntity("Cube","Cube.001.mesh");
 
 	Ogre::SceneNode *headNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("Head");
+	Ogre::SceneNode *cubeNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("Cube");
 	headNode->attachObject(ogreHead);
+	cubeNode->attachObject(cube);
 
 	mSceneMgr->setAmbientLight(Ogre::ColourValue(0.5,0.5,0.5));
+
+	size = cube->getBoundingBox().getSize();
+	btVector3 boxVector(size.x,size.y,size.z);
+	btCollisionShape *boxShape = new btBoxShape(boxVector);
+	btDefaultMotionState* boxMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3(0,0,0)));
+	boxBody = new btRigidBody(btScalar(1),boxMotionState,boxShape,btVector3(0,0,0));
+	pDynamicsWorld->addRigidBody(boxBody);
 
 	Ogre::Light *light = mSceneMgr->createLight("Light1");
 	light->setPosition(20,80,50);
@@ -172,6 +184,11 @@ bool ZombieClient::frameRenderingQueued(const Ogre::FrameEvent& evt){
 			Ogre::Degree(-mRotate * mMouse->getMouseState().X.rel),Ogre::Node::TS_WORLD);
 	mSceneMgr->getSceneNode("PlayerCam")->pitch(
 			Ogre::Degree(-mRotate * mMouse->getMouseState().Y.rel),Ogre::Node::TS_LOCAL);
+	
+	pDynamicsWorld->stepSimulation(evt.timeSinceLastFrame,NULL,NULL);
+	btTransform trans;
+	boxBody->getMotionState()->getWorldTransform(trans);
+	mSceneMgr->getSceneNode("Cube")->setPosition(trans.getOrigin().x(),trans.getOrigin().y(),trans.getOrigin().z());
 
 	return true;
 }

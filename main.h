@@ -31,6 +31,7 @@ class ZombieClient : public Ogre::WindowEventListener, public Ogre::FrameListene
 		btDefaultCollisionConfiguration* pCollisionConfiguration;
 		btSequentialImpulseConstraintSolver* pSolver;
 		btDiscreteDynamicsWorld* pDynamicsWorld;
+		btRigidBody *boxBody;
 
 		void createScene();
 	protected:
