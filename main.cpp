@@ -67,6 +67,7 @@ bool ZombieClient::go(){
 	Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
 	Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 	mSceneMgr = mRoot->createSceneManager("OctreeSceneManager");
+	mSceneMgr->setShadowTechnique(Ogre::ShadowTechnique::SHADOWTYPE_STENCIL_ADDITIVE);
 
 	//Set up a basic scene
 	mCamera = mSceneMgr->createCamera("PlayerCam");
