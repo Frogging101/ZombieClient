@@ -127,8 +127,8 @@ void ZombieClient::createScene(){
 	Ogre::Vector3 size;
 
 	Ogre::Entity *room = mSceneMgr->createEntity("Room","Cube.mesh");
-	room->setCastShadows(true);
 	Ogre::Entity *cube = mSceneMgr->createEntity("Cube","Cube.001.mesh");
+	room->setCastShadows(false);
 	cube->setCastShadows(true);
 
 	Ogre::SceneNode *roomNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("Room");
