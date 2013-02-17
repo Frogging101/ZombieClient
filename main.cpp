@@ -67,7 +67,7 @@ bool ZombieClient::go(){
 	Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
 	Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 	mSceneMgr = mRoot->createSceneManager("OctreeSceneManager");
-	mSceneMgr->setShadowTechnique(Ogre::ShadowTechnique::SHADOWTYPE_STENCIL_ADDITIVE);
+	mSceneMgr->setShadowTechnique(Ogre::ShadowTechnique::SHADOWTYPE_STENCIL_MODULATIVE);
 
 	//Set up a basic scene
 	mCamera = mSceneMgr->createCamera("PlayerCam");
@@ -114,13 +114,18 @@ bool ZombieClient::go(){
 void ZombieClient::createScene(){
 	Ogre::Entity *room = mSceneMgr->createEntity("Room","Cube.mesh");
 
+	room->setCastShadows(true);
+	Ogre::Entity *cube = mSceneMgr->createEntity("Cube","Cube.001.mesh");
+	cube->setCastShadows(true);
+
 	Ogre::SceneNode *roomNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("Room");
 	roomNode->attachObject(room);
 
-	mSceneMgr->setAmbientLight(Ogre::ColourValue(0.5,0.5,0.5));
+	//mSceneMgr->setAmbientLight(Ogre::ColourValue(0.2,0.2,0.2));
 
 	Ogre::Light *light = mSceneMgr->createLight("Light1");
-	light->setPosition(20,80,50);
+	light->setPosition(10,5,5);
+	light->setDiffuseColour(1,1,1);
 }
 
 bool ZombieClient::frameRenderingQueued(const Ogre::FrameEvent& evt){
