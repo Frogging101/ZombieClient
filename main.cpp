@@ -142,6 +142,57 @@ void ZombieClient::createScene(){
 	boxBody = new btRigidBody(btScalar(1),boxMotionState,boxShape,btVector3(0,0,0));
 	pDynamicsWorld->addRigidBody(boxBody);
 
+	Ogre::MeshPtr meshPtr = room->getMesh();
+	Ogre::VertexData *vertexData = meshPtr->sharedVertexData;
+	
+	const Ogre::VertexDeclaration* vd= vertexData->vertexDeclaration;
+	const Ogre::VertexElement *posElem = vd->findElementBySemantic(Ogre::VES_POSITION);
+	Ogre::HardwareVertexBufferSharedPtr vbuf = vertexData->vertexBufferBinding->getBuffer(posElem->getSource());
+	
+	Ogre::Vector3 *triangles[100][3];
+	int triangleCount = 0;
+	float something[9];
+	int offset = 0;
+	int trianglesmax = (vbuf->getSizeInBytes()/vbuf->getVertexSize()/3);
+
+	for(int i=0;i<trianglesmax;i++){
+		//memset(something,0,3);
+
+		vbuf->readData(offset,vbuf->getVertexSize(),&something);
+		triangles[i][0] = new Ogre::Vector3(something[0],something[1],something[2]);
+		//memset(something,0,3);
+		offset += vbuf->getVertexSize();
+
+		vbuf->readData(0,vbuf->getVertexSize(),&something);
+		triangles[i][1] = new Ogre::Vector3(something[0],something[1],something[2]);
+		//memset(something,0,3);
+		offset += vbuf->getVertexSize();
+
+		vbuf->readData(0,vbuf->getVertexSize(),&something);
+		triangles[i][2] = new Ogre::Vector3(something[0],something[1],something[2]);
+		//memset(something,0,3);
+		offset += vbuf->getVertexSize();
+		triangleCount++;
+	}
+
+	btTriangleMesh *trimesh = new btTriangleMesh();
+	btVector3 *vertex1;
+	btVector3 *vertex2;
+	btVector3 *vertex3;
+
+	for(int i=0;i<triangleCount;i++){
+		vertex1 = new btVector3(triangles[i][0]->x,triangles[i][0]->y,triangles[i][0]->z);
+		vertex2 = new btVector3(triangles[i][1]->x,triangles[i][1]->y,triangles[i][1]->z);
+		vertex3 = new btVector3(triangles[i][2]->x,triangles[i][2]->y,triangles[i][2]->z);
+
+		trimesh->addTriangle(*vertex1,*vertex2,*vertex3);
+	}
+
+	btBvhTriangleMeshShape *trimeshShape = new btBvhTriangleMeshShape(trimesh,true);
+	btDefaultMotionState* triMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3(0,0,0)));
+	btRigidBody *trimeshBody = new btRigidBody(0,triMotionState,trimeshShape,btVector3(0,0,0));
+	pDynamicsWorld->addRigidBody(trimeshBody);
+
 	Ogre::Light *light = mSceneMgr->createLight("Light1");
 	light->setPosition(20,80,50);
 }
