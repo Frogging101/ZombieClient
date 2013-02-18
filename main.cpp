@@ -67,7 +67,7 @@ bool ZombieClient::go(){
 	Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
 	Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 	mSceneMgr = mRoot->createSceneManager("OctreeSceneManager");
-	mSceneMgr->setShadowTechnique(Ogre::ShadowTechnique::SHADOWTYPE_STENCIL_MODULATIVE);
+	mSceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_MODULATIVE);
 
 	//Initialize Bullet for physics
 	pBroadphase = new btDbvtBroadphase();
