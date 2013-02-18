@@ -139,7 +139,7 @@ void ZombieClient::createScene(){
 	//mSceneMgr->setAmbientLight(Ogre::ColourValue(0.2,0.2,0.2));
 
 	size = cube->getBoundingBox().getSize();
-	btVector3 boxVector(size.x,size.y,size.z);
+	btVector3 boxVector(size.x/2,size.y/2,size.z/2);
 	btCollisionShape *boxShape = new btBoxShape(boxVector);
 	btDefaultMotionState* boxMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3(0,0,0)));
 	boxBody = new btRigidBody(btScalar(1),boxMotionState,boxShape,btVector3(0,0,0));
@@ -152,9 +152,9 @@ void ZombieClient::createScene(){
 	const Ogre::VertexElement *posElem = vd->findElementBySemantic(Ogre::VES_POSITION);
 	Ogre::HardwareVertexBufferSharedPtr vbuf = vertexData->vertexBufferBinding->getBuffer(posElem->getSource());
 	
-	Ogre::Vector3 *triangles[100][3];
+	Ogre::Vector3 *triangles[512][3];
 	int triangleCount = 0;
-	float something[9];
+	float something[3];
 	int offset = 0;
 	int trianglesmax = (vbuf->getSizeInBytes()/vbuf->getVertexSize()/3);
 
@@ -166,12 +166,12 @@ void ZombieClient::createScene(){
 		//memset(something,0,3);
 		offset += vbuf->getVertexSize();
 
-		vbuf->readData(0,vbuf->getVertexSize(),&something);
+		vbuf->readData(offset,vbuf->getVertexSize(),&something);
 		triangles[i][1] = new Ogre::Vector3(something[0],something[1],something[2]);
 		//memset(something,0,3);
 		offset += vbuf->getVertexSize();
 
-		vbuf->readData(0,vbuf->getVertexSize(),&something);
+		vbuf->readData(offset,vbuf->getVertexSize(),&something);
 		triangles[i][2] = new Ogre::Vector3(something[0],something[1],something[2]);
 		//memset(something,0,3);
 		offset += vbuf->getVertexSize();
@@ -189,15 +189,18 @@ void ZombieClient::createScene(){
 		vertex3 = new btVector3(triangles[i][2]->x,triangles[i][2]->y,triangles[i][2]->z);
 
 		trimesh->addTriangle(*vertex1,*vertex2,*vertex3);
+		delete vertex1;
+		delete vertex2;
+		delete vertex3;
 	}
 
 	btBvhTriangleMeshShape *trimeshShape = new btBvhTriangleMeshShape(trimesh,true);
-	btDefaultMotionState* triMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3(0,0,0)));
-	btRigidBody *trimeshBody = new btRigidBody(0,triMotionState,trimeshShape,btVector3(0,0,0));
+	//btDefaultMotionState* triMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3(0,0,0)));
+	btRigidBody *trimeshBody = new btRigidBody(0,NULL,trimeshShape,btVector3(0,0,0));
 	pDynamicsWorld->addRigidBody(trimeshBody);
 
 	Ogre::Light *light = mSceneMgr->createLight("Light1");
-	light->setPosition(10,5,5);
+	light->setPosition(0,0,0);
 	light->setDiffuseColour(1,1,1);
 }
 
@@ -232,6 +235,9 @@ bool ZombieClient::frameRenderingQueued(const Ogre::FrameEvent& evt){
 	}
 	if(mKeyboard->isKeyDown(OIS::KC_D)){
 		cameraTrans.x += mMove;
+	}
+	if(mKeyboard->isKeyDown(OIS::KC_SPACE)){
+		boxBody->applyForce(btVector3(50,0,0),btVector3(0,0,0));
 	}
 
 	mSceneMgr->getSceneNode("PlayerCam")->translate(cameraTrans * evt.timeSinceLastFrame,
