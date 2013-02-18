@@ -7,6 +7,7 @@
 #include <OgreRenderWindow.h>
 #include <OgreEntity.h>
 #include <OgreWindowEventUtilities.h>
+#include <OgreSubMesh.h>
 
 #include "main.h"
 using namespace std;
@@ -67,7 +68,7 @@ bool ZombieClient::go(){
 	Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
 	Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 	mSceneMgr = mRoot->createSceneManager("OctreeSceneManager");
-	mSceneMgr->setShadowTechnique(Ogre::ShadowTechnique::SHADOWTYPE_STENCIL_MODULATIVE);
+	mSceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_MODULATIVE);
 
 	//Initialize Bullet for physics
 	pBroadphase = new btDbvtBroadphase();
@@ -152,29 +153,48 @@ void ZombieClient::createScene(){
 	const Ogre::VertexElement *posElem = vd->findElementBySemantic(Ogre::VES_POSITION);
 	Ogre::HardwareVertexBufferSharedPtr vbuf = vertexData->vertexBufferBinding->getBuffer(posElem->getSource());
 	
-	Ogre::Vector3 *triangles[512][3];
+	Ogre::HardwareIndexBufferSharedPtr ibuf;
+	uint16_t somethingindex;
+	uint16_t indices[2048];
+	int trianglesmax = 0;
+
+	for(int i=0,j=0;i<meshPtr->getNumSubMeshes();i++){
+		int offset = 0;
+		ibuf = meshPtr->getSubMesh(i)->indexData->indexBuffer;
+
+		for(int k=0;k<ibuf->getNumIndexes();k++){
+			ibuf->readData(offset,ibuf->getIndexSize(),&somethingindex);
+			indices[j] = somethingindex;
+			offset += ibuf->getIndexSize();
+			trianglesmax++;
+			j++;
+		}
+	}
+
+	Ogre::Vector3 *triangles[2048][3];
 	int triangleCount = 0;
 	float something[3];
-	int offset = 0;
-	int trianglesmax = (vbuf->getSizeInBytes()/vbuf->getVertexSize()/3);
 
-	for(int i=0;i<trianglesmax;i++){
+	for(int i=0,j=0,offset=0;i<trianglesmax && j<trianglesmax;i++){
 		//memset(something,0,3);
+		offset = indices[j]*vbuf->getVertexSize();
+		j++;
 
 		vbuf->readData(offset,vbuf->getVertexSize(),&something);
 		triangles[i][0] = new Ogre::Vector3(something[0],something[1],something[2]);
 		//memset(something,0,3);
-		offset += vbuf->getVertexSize();
+		offset = indices[j]*vbuf->getVertexSize();
+		j++;
 
 		vbuf->readData(offset,vbuf->getVertexSize(),&something);
 		triangles[i][1] = new Ogre::Vector3(something[0],something[1],something[2]);
 		//memset(something,0,3);
-		offset += vbuf->getVertexSize();
+		offset = indices[j]*vbuf->getVertexSize();
+		j++;
 
 		vbuf->readData(offset,vbuf->getVertexSize(),&something);
 		triangles[i][2] = new Ogre::Vector3(something[0],something[1],something[2]);
 		//memset(something,0,3);
-		offset += vbuf->getVertexSize();
 		triangleCount++;
 	}
 
@@ -237,6 +257,7 @@ bool ZombieClient::frameRenderingQueued(const Ogre::FrameEvent& evt){
 		cameraTrans.x += mMove;
 	}
 	if(mKeyboard->isKeyDown(OIS::KC_SPACE)){
+		boxBody->forceActivationState(DISABLE_DEACTIVATION);
 		boxBody->applyForce(btVector3(50,0,0),btVector3(0,0,0));
 	}
 
