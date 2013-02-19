@@ -7,9 +7,10 @@
 #include <OgreRenderWindow.h>
 #include <OgreEntity.h>
 #include <OgreWindowEventUtilities.h>
-#include <OgreSubMesh.h>
 
 #include "main.h"
+#include "Physics.h"
+
 using namespace std;
 
 ZombieClient::ZombieClient()
@@ -88,8 +89,7 @@ bool ZombieClient::go(){
 
 	Ogre::Viewport *vp = mWindow->addViewport(mCamera);
 	vp->setBackgroundColour(Ogre::ColourValue(0,0,0));
-	mCamera->setAspectRatio(
-			Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
+	mCamera->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
 
 	createScene();
 
@@ -137,85 +137,18 @@ void ZombieClient::createScene(){
 	roomNode->attachObject(room);
 	cubeNode->attachObject(cube);
 
-	//mSceneMgr->setAmbientLight(Ogre::ColourValue(0.2,0.2,0.2));
-
 	size = cube->getBoundingBox().getSize();
-	btVector3 boxVector(size.x/2,size.y/2,size.z/2);
+
+	btVector3 boxVector(size.x/2,size.y/2,size.z/2); //This needs to be divided by 2 to represent half extents
 	btCollisionShape *boxShape = new btBoxShape(boxVector);
-	btDefaultMotionState* boxMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3(0,0,0)));
-	boxBody = new btRigidBody(btScalar(1),boxMotionState,boxShape,btVector3(0,0,0));
-	pDynamicsWorld->addRigidBody(boxBody);
 
-	Ogre::MeshPtr meshPtr = room->getMesh();
-	Ogre::VertexData *vertexData = meshPtr->sharedVertexData;
+	//This does something. I don't know what but it's necessary.
+	btDefaultMotionState* boxMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3(0,0,0))); 
 	
-	const Ogre::VertexDeclaration* vd= vertexData->vertexDeclaration;
-	const Ogre::VertexElement *posElem = vd->findElementBySemantic(Ogre::VES_POSITION);
-	Ogre::HardwareVertexBufferSharedPtr vbuf = vertexData->vertexBufferBinding->getBuffer(posElem->getSource());
-	
-	Ogre::HardwareIndexBufferSharedPtr ibuf;
-	uint16_t somethingindex;
-	uint16_t indices[2048];
-	int trianglesmax = 0;
+	boxBody = new btRigidBody(1,boxMotionState,boxShape,btVector3(0,0,0));
+	pDynamicsWorld->addRigidBody(boxBody); //Add the rigid body to the world
 
-	for(int i=0,j=0;i<meshPtr->getNumSubMeshes();i++){
-		int offset = 0;
-		ibuf = meshPtr->getSubMesh(i)->indexData->indexBuffer;
-
-		for(int k=0;k<ibuf->getNumIndexes();k++){
-			ibuf->readData(offset,ibuf->getIndexSize(),&somethingindex);
-			indices[j] = somethingindex;
-			offset += ibuf->getIndexSize();
-			trianglesmax++;
-			j++;
-		}
-	}
-
-	Ogre::Vector3 *triangles[2048][3];
-	int triangleCount = 0;
-	float something[3];
-
-	for(int i=0,j=0,offset=0;i<trianglesmax && j<trianglesmax;i++){
-		//memset(something,0,3);
-		offset = indices[j]*vbuf->getVertexSize();
-		j++;
-
-		vbuf->readData(offset,vbuf->getVertexSize(),&something);
-		triangles[i][0] = new Ogre::Vector3(something[0],something[1],something[2]);
-		//memset(something,0,3);
-		offset = indices[j]*vbuf->getVertexSize();
-		j++;
-
-		vbuf->readData(offset,vbuf->getVertexSize(),&something);
-		triangles[i][1] = new Ogre::Vector3(something[0],something[1],something[2]);
-		//memset(something,0,3);
-		offset = indices[j]*vbuf->getVertexSize();
-		j++;
-
-		vbuf->readData(offset,vbuf->getVertexSize(),&something);
-		triangles[i][2] = new Ogre::Vector3(something[0],something[1],something[2]);
-		//memset(something,0,3);
-		triangleCount++;
-	}
-
-	btTriangleMesh *trimesh = new btTriangleMesh();
-	btVector3 *vertex1;
-	btVector3 *vertex2;
-	btVector3 *vertex3;
-
-	for(int i=0;i<triangleCount;i++){
-		vertex1 = new btVector3(triangles[i][0]->x,triangles[i][0]->y,triangles[i][0]->z);
-		vertex2 = new btVector3(triangles[i][1]->x,triangles[i][1]->y,triangles[i][1]->z);
-		vertex3 = new btVector3(triangles[i][2]->x,triangles[i][2]->y,triangles[i][2]->z);
-
-		trimesh->addTriangle(*vertex1,*vertex2,*vertex3);
-		delete vertex1;
-		delete vertex2;
-		delete vertex3;
-	}
-
-	btBvhTriangleMeshShape *trimeshShape = new btBvhTriangleMeshShape(trimesh,true);
-	//btDefaultMotionState* triMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3(0,0,0)));
+	btBvhTriangleMeshShape *trimeshShape = new btBvhTriangleMeshShape(getTriMesh(room),true);
 	btRigidBody *trimeshBody = new btRigidBody(0,NULL,trimeshShape,btVector3(0,0,0));
 	pDynamicsWorld->addRigidBody(trimeshBody);
 
