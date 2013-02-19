@@ -1,8 +1,8 @@
 SRCS = $(wildcard *.cpp)
 OBJS = $(patsubst %.cpp,%.o,$(SRCS))
 CXX = g++
-LD_FLAGS = `pkg-config --libs OGRE OGRE-Terrain OIS` -lboost_system -lboost_thread-mt -lenet 
-CC_FLAGS = -g `pkg-config --cflags OGRE OGRE-Terrain OIS` 
+LD_FLAGS = `pkg-config --libs OGRE OGRE-Terrain OIS bullet` -lboost_system -lboost_thread-mt -lenet 
+CC_FLAGS = -g `pkg-config --cflags OGRE OGRE-Terrain OIS bullet` 
 TITLE = ZombieClient
 
 $(TITLE): $(OBJS)

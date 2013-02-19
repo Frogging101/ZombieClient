@@ -9,6 +9,8 @@
 #include <OgreWindowEventUtilities.h>
 
 #include "main.h"
+#include "Physics.h"
+
 using namespace std;
 
 ZombieClient::ZombieClient()
@@ -67,7 +69,18 @@ bool ZombieClient::go(){
 	Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
 	Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 	mSceneMgr = mRoot->createSceneManager("OctreeSceneManager");
-	mSceneMgr->setShadowTechnique(Ogre::ShadowTechnique::SHADOWTYPE_STENCIL_MODULATIVE);
+	mSceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_MODULATIVE);
+
+	//Initialize Bullet for physics
+	pBroadphase = new btDbvtBroadphase();
+
+	pCollisionConfiguration = new btDefaultCollisionConfiguration();
+	pDispatcher = new btCollisionDispatcher(pCollisionConfiguration);
+ 
+	pSolver = new btSequentialImpulseConstraintSolver;
+
+	pDynamicsWorld = new btDiscreteDynamicsWorld(pDispatcher,pBroadphase,pSolver,pCollisionConfiguration);
+	pDynamicsWorld->setGravity(btVector3(0,-9.81,0));
 
 	//Set up a basic scene
 	mCamera = mSceneMgr->createCamera("PlayerCam");
@@ -76,8 +89,7 @@ bool ZombieClient::go(){
 
 	Ogre::Viewport *vp = mWindow->addViewport(mCamera);
 	vp->setBackgroundColour(Ogre::ColourValue(0,0,0));
-	mCamera->setAspectRatio(
-			Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
+	mCamera->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
 
 	createScene();
 
@@ -112,18 +124,36 @@ bool ZombieClient::go(){
 }
 
 void ZombieClient::createScene(){
+
+	Ogre::Vector3 size;
+
 	Ogre::Entity *room = mSceneMgr->createEntity("Room","Cube.mesh");
 	Ogre::Entity *cube = mSceneMgr->createEntity("Cube","Cube.001.mesh");
 	room->setCastShadows(false);
 	cube->setCastShadows(true);
 
 	Ogre::SceneNode *roomNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("Room");
+	Ogre::SceneNode *cubeNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("Cube");
 	roomNode->attachObject(room);
+	cubeNode->attachObject(cube);
 
-	//mSceneMgr->setAmbientLight(Ogre::ColourValue(0.2,0.2,0.2));
+	size = cube->getBoundingBox().getSize();
+
+	btVector3 boxVector(size.x/2,size.y/2,size.z/2); //This needs to be divided by 2 to represent half extents
+	btCollisionShape *boxShape = new btBoxShape(boxVector);
+
+	//This does something. I don't know what but it's necessary.
+	btDefaultMotionState* boxMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3(0,0,0))); 
+	
+	boxBody = new btRigidBody(1,boxMotionState,boxShape,btVector3(0,0,0));
+	pDynamicsWorld->addRigidBody(boxBody); //Add the rigid body to the world
+
+	btBvhTriangleMeshShape *trimeshShape = new btBvhTriangleMeshShape(getTriMesh(room),true);
+	btRigidBody *trimeshBody = new btRigidBody(0,NULL,trimeshShape,btVector3(0,0,0));
+	pDynamicsWorld->addRigidBody(trimeshBody);
 
 	Ogre::Light *light = mSceneMgr->createLight("Light1");
-	light->setPosition(10,5,5);
+	light->setPosition(0,0,0);
 	light->setDiffuseColour(1,1,1);
 }
 
@@ -159,6 +189,10 @@ bool ZombieClient::frameRenderingQueued(const Ogre::FrameEvent& evt){
 	if(mKeyboard->isKeyDown(OIS::KC_D)){
 		cameraTrans.x += mMove;
 	}
+	if(mKeyboard->isKeyDown(OIS::KC_SPACE)){
+		boxBody->forceActivationState(DISABLE_DEACTIVATION);
+		boxBody->applyForce(btVector3(50,0,0),btVector3(0,0,0));
+	}
 
 	mSceneMgr->getSceneNode("PlayerCam")->translate(cameraTrans * evt.timeSinceLastFrame,
 			Ogre::Node::TS_LOCAL);
@@ -166,6 +200,11 @@ bool ZombieClient::frameRenderingQueued(const Ogre::FrameEvent& evt){
 			Ogre::Degree(-mRotate * mMouse->getMouseState().X.rel),Ogre::Node::TS_WORLD);
 	mSceneMgr->getSceneNode("PlayerCam")->pitch(
 			Ogre::Degree(-mRotate * mMouse->getMouseState().Y.rel),Ogre::Node::TS_LOCAL);
+	
+	pDynamicsWorld->stepSimulation(evt.timeSinceLastFrame,NULL,NULL);
+	btTransform trans;
+	boxBody->getMotionState()->getWorldTransform(trans);
+	mSceneMgr->getSceneNode("Cube")->setPosition(trans.getOrigin().x(),trans.getOrigin().y(),trans.getOrigin().z());
 
 	return true;
 }
