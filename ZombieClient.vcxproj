@@ -70,7 +70,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(OGRE_HOME)\lib\$(Configuration);$(OGRE_HOME)\boost\lib;C:\Users\John\Downloads\enet\lib;$(Projectdir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>OgreMain_d.lib;OIS_d.lib;%(AdditionalDependencies);enet.lib;enet64.lib;ws2_32.lib;winmm.lib;BulletDynamics_vs2010_debug.lib;BulletCollision_vs2010_debug.lib;ConvexDecomposition_vs2010_debug.lib;LinearMath_vs2010_debug.lib</AdditionalDependencies>
+      <AdditionalDependencies>OgreMain_d.lib;OIS_d.lib;%(AdditionalDependencies);enet.lib;enet64.lib;ws2_32.lib;winmm.lib;BulletDynamics_vs2010_debug.lib;BulletCollision_vs2010_debug.lib;LinearMath_vs2010_debug.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(OutDir)\$(TargetFileName)" "$(OGRE_HOME)\Bin\$(Configuration)"</Command>
