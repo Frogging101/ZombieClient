@@ -12,7 +12,7 @@ btTriangleMesh *getTriMesh(Ogre::Entity *entity){
 	Ogre::MeshPtr meshPtr = entity->getMesh();
 	Ogre::VertexData *vertexData = meshPtr->sharedVertexData;
 	//We need to GO DEEPER
-	const Ogre::VertexDeclaration* vd= vertexData->vertexDeclaration;
+	const Ogre::VertexDeclaration* vd = vertexData->vertexDeclaration;
 	const Ogre::VertexElement *posElem = vd->findElementBySemantic(Ogre::VES_POSITION);
 	Ogre::HardwareVertexBufferSharedPtr vbuf = vertexData->vertexBufferBinding->getBuffer(posElem->getSource());
 	//We now have a hardware vertex buffer pointer

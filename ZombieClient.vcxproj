@@ -11,10 +11,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GameEntity.cpp" />
+    <ClCompile Include="LevelLoader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Physics.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameEntity.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="Physics.h" />
   </ItemGroup>
@@ -64,7 +67,9 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(OGRE_HOME)\include;$(OGRE_HOME)\include\OIS;$(OGRE_HOME)\include\OGRE;$(OGRE_HOME)\Samples\Common\include;$(OGRE_HOME)\boost;C:\Users\John\Downloads\enet\include;C:\Boost\include\boost-1_53;$(ProjectDir)\include\bullet;$(ProjectDir)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OGRE_HOME)\include;$(OGRE_HOME)\include\OIS;$(OGRE_HOME)\include\OGRE;$(OGRE_HOME)\Samples\Common\include;$(OGRE_HOME)\boost;C:\Users\John\Downloads\enet\include;C:\Boost\include\boost-1_53;$(ProjectDir)\include\bullet;$(ProjectDir)\include\rapidxml-1.13</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -85,7 +90,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(OGRE_HOME)\include;$(OGRE_HOME)\include\OIS;$(OGRE_HOME)\include\OGRE;$(OGRE_HOME)\Samples\Common\include;$(OGRE_HOME)\boost;C:\Users\John\Downloads\enet\include;C:\Boost\include\boost-1_53;$(ProjectDir)\include\bullet;$(ProjectDir)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OGRE_HOME)\include;$(OGRE_HOME)\include\OIS;$(OGRE_HOME)\include\OGRE;$(OGRE_HOME)\Samples\Common\include;$(OGRE_HOME)\boost;C:\Users\John\Downloads\enet\include;C:\Boost\include\boost-1_53;$(ProjectDir)\include\bullet;$(ProjectDir)\include\rapidxml-1.13</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

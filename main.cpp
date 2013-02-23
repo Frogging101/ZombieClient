@@ -13,13 +13,14 @@
 
 using namespace std;
 
+ZombieClient game;
+
 ZombieClient::ZombieClient()
 	: mRoot(0),
 	mResourcesCfg(Ogre::StringUtil::BLANK),
 	mPluginsCfg(Ogre::StringUtil::BLANK)
 {
-//Put constructor stuff here
-
+//constructor stuff here
 }
 
 ZombieClient::~ZombieClient(){
@@ -84,6 +85,7 @@ bool ZombieClient::go(){
 
 	//Set up a basic scene
 	mCamera = mSceneMgr->createCamera("PlayerCam");
+
 	mCamera->setNearClipDistance(0.1);
 	mSceneMgr->createSceneNode("PlayerCam")->attachObject(mCamera);
 
@@ -124,7 +126,7 @@ bool ZombieClient::go(){
 }
 
 void ZombieClient::createScene(){
-
+/*
 	Ogre::Vector3 size;
 
 	Ogre::Entity *room = mSceneMgr->createEntity("Room","Cube.mesh");
@@ -154,7 +156,8 @@ void ZombieClient::createScene(){
 
 	Ogre::Light *light = mSceneMgr->createLight("Light1");
 	light->setPosition(0,0,0);
-	light->setDiffuseColour(1,1,1);
+	light->setDiffuseColour(1,1,1);*/
+	loadLevel();
 }
 
 bool ZombieClient::frameRenderingQueued(const Ogre::FrameEvent& evt){
@@ -201,10 +204,10 @@ bool ZombieClient::frameRenderingQueued(const Ogre::FrameEvent& evt){
 	mSceneMgr->getSceneNode("PlayerCam")->pitch(
 			Ogre::Degree(-mRotate * mMouse->getMouseState().Y.rel),Ogre::Node::TS_LOCAL);
 	
-	pDynamicsWorld->stepSimulation(evt.timeSinceLastFrame,NULL,NULL);
+	//pDynamicsWorld->stepSimulation(evt.timeSinceLastFrame,NULL,NULL);
 	btTransform trans;
-	boxBody->getMotionState()->getWorldTransform(trans);
-	mSceneMgr->getSceneNode("Cube")->setPosition(trans.getOrigin().x(),trans.getOrigin().y(),trans.getOrigin().z());
+	//boxBody->getMotionState()->getWorldTransform(trans);
+	//mSceneMgr->getSceneNode("Cube")->setPosition(trans.getOrigin().x(),trans.getOrigin().y(),trans.getOrigin().z());
 
 	return true;
 }
@@ -232,9 +235,6 @@ void ZombieClient::windowClosed(Ogre::RenderWindow *rw){
 }
 
 int main(int argc, char *argv[]){
-
-	ZombieClient game;
-
 	try {
 		game.go();
 	} catch (Ogre::Exception& e) {

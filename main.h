@@ -1,6 +1,8 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+#include <vector>
+
 #include <OgreRoot.h>
 #include <OgreWindowEventUtilities.h>
 #include <OISEvents.h>
@@ -10,17 +12,22 @@
 
 #include <btBulletDynamicsCommon.h>
 
+#include "GameEntity.h"
+
 class ZombieClient : public Ogre::WindowEventListener, public Ogre::FrameListener{
 	public:
 		ZombieClient();
 		virtual ~ZombieClient();
 		bool go();
+
+		Ogre::SceneManager *mSceneMgr;
+		std::vector<GameEntity*> entities;
+		std::vector<GameEntity*> physicsEntities;
 	private:
 		Ogre::Root *mRoot;
 		Ogre::String mPluginsCfg;
 		Ogre::String mResourcesCfg;
 		Ogre::RenderWindow *mWindow;
-		Ogre::SceneManager *mSceneMgr;
 		Ogre::Camera *mCamera;
 		OIS::InputManager *mInputManager;
 		OIS::Mouse *mMouse;
@@ -34,10 +41,13 @@ class ZombieClient : public Ogre::WindowEventListener, public Ogre::FrameListene
 		btRigidBody *boxBody;
 
 		void createScene();
+		void loadLevel();
 	protected:
 		virtual bool frameRenderingQueued(const Ogre::FrameEvent& evt);
 		virtual void windowResized(Ogre::RenderWindow *rw);
 		virtual void windowClosed(Ogre::RenderWindow *rw);
 };
+
+extern ZombieClient game;
 
 #endif
