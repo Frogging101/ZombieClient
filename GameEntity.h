@@ -19,7 +19,7 @@ enum entityTypes{
 
 class GameEntity{
 public:
-	GameEntity(Ogre::Vector3 pos, Ogre::Vector3 rot, std::string name, int physicsType, int entityType);
+	GameEntity(Ogre::Vector3 pos, Ogre::Vector3 rot, std::string name, int physicsType, int entityType,std::string mesh);
 
 	Ogre::Entity *ogreEntity;
 	Ogre::Light *ogreLight;
