@@ -44,9 +44,7 @@ void ZombieClient::loadLevel(){
 	xml_node<> *XMLEntityNode = XMLSceneNode->first_node("Entity");
 	entityCount++;
 	int i=0;
-	//while((XMLEntityNode = XMLEntityNode->next_sibling()) != 0){
 	while(XMLEntityNode != 0){
-		mesh = "Cube.mesh";
 		for(xml_attribute<> *attr = XMLEntityNode->first_attribute();
 				attr; attr = attr->next_attribute()){
 
