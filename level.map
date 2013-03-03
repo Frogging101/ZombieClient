@@ -1,9 +1,7 @@
 <?xml version="1.0" ?>
 <Scene>
-	<Entity name="Camera" pos="2.0938425064086914 -1.4849351644515991 1.6317764520645142" rot="0.7570047974586487 0.004128230735659599 0.8199313879013062" type="CAMERA"/>
 	<Entity mesh="Cube" name="Cube" pMass="0" pShape="CONVEX_HULL" pos="0.0 0.0 0.0" rot="0.0 -0.0 -0.0" type="MESH"/>
 	<Entity mesh="Cube.001" name="Cube.001" pMass="1.0" pShape="BOX" pos="0.0 0.0 0.0" rot="0.0 0.0 0.0" type="MESH"/>
 	<Entity mesh="Cube.001" name="Cube.002" pMass="1.0" pShape="BOX" pos="2.6069605350494385 0.0 0.0" rot="0.0 0.0 0.0" type="MESH"/>
-	<Entity name="Empty" pos="5.773557662963867 -3.0001959800720215 0.9470129013061523" rot="0.0 0.0 0.0" type="EMPTY"/>
-	<Entity lType="POINT" name="Lamp" pos="0.4875161647796631 1.9567010402679443 2.2847352027893066" rot="0.6503279805183411 0.055217113345861435 1.8663908243179321" type="LAMP"/>
+	<Entity lType="POINT" name="Lamp" pos="-14.875161647796631 1.9567010402679443 2.2847352027893066" rot="0.6503279805183411 0.055217113345861435 1.8663908243179321" type="LAMP"/>
 </Scene>

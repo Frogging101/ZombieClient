@@ -193,8 +193,8 @@ bool ZombieClient::frameRenderingQueued(const Ogre::FrameEvent& evt){
 		cameraTrans.x += mMove;
 	}
 	if(mKeyboard->isKeyDown(OIS::KC_SPACE)){
-		boxBody->forceActivationState(DISABLE_DEACTIVATION);
-		boxBody->applyForce(btVector3(50,0,0),btVector3(0,0,0));
+//		boxBody->forceActivationState(DISABLE_DEACTIVATION);
+//		boxBody->applyForce(btVector3(50,0,0),btVector3(0,0,0));
 	}
 
 	mSceneMgr->getSceneNode("PlayerCam")->translate(cameraTrans * evt.timeSinceLastFrame,

@@ -49,7 +49,8 @@ public:
 
 class GameObject: public GameEntity{
 public:
-	GameObject(Ogre::Vector3 pos, Ogre::Vector3 rot, std::string name, int physicsType, int physicsShape, int entityType, std::string mesh);
+	GameObject(Ogre::Vector3 pos, Ogre::Vector3 rot, std::string name, 
+	int physicsShape, float mass, int entityType, std::string mesh);
 
 	Ogre::SceneNode *ogreSceneNode;
 	btCollisionShape *colShape;

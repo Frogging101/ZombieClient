@@ -13,15 +13,13 @@ void ZombieClient::loadLevel(){
 	string buffer2;
 	stringstream ss;
 	
-	string entityTypeStr;
-	string physicsTypeStr;
+	string entityTypeStr,physicsShapeStr,lightTypeStr;
 
-	Ogre::Vector3 pos;
-	Ogre::Vector3 rot;
-	string name;
-	string mesh;
-	int entityType;
-	int physicsType = 0;
+	Ogre::Vector3 pos,rot;
+	string name,mesh;
+	int entityType,physicsShape;
+	Ogre::Light::LightTypes lightType;
+	float mass;
 
 	ifstream file("level.map",fstream::in);
 
@@ -49,6 +47,7 @@ void ZombieClient::loadLevel(){
 				attr; attr = attr->next_attribute()){
 
 			ss.str("");
+			ss.clear();
 			std::cout << "Got " << attr->name() << " with value: " << attr->value() << std::endl;
 			std::string atrName = attr->name();
 			if(atrName == "name"){
@@ -87,10 +86,47 @@ void ZombieClient::loadLevel(){
 			}
 			else if(atrName == "mesh"){
 				mesh = attr->value();
+				mesh += ".mesh";
+			}
+			else if(atrName == "pMass"){
+				buffer2 = attr->value();
+				ss << buffer2;
+				ss >> mass;
+			}
+			else if(atrName == "pShape"){
+				physicsShapeStr = attr->value();
+				if(physicsShapeStr == "CAPSULE")
+					physicsShape = PSHAPE_CAPSULE;
+				else if(physicsShapeStr == "BOX")
+					physicsShape = PSHAPE_BOX;
+				else if(physicsShapeStr == "SPHERE")
+					physicsShape = PSHAPE_SPHERE;
+				else if(physicsShapeStr == "CYLINDER")
+					physicsShape = PSHAPE_CYLINDER;
+				else if(physicsShapeStr == "CONE")
+					physicsShape = PSHAPE_CONE;
+				else if(physicsShapeStr == "CONVEX_HULL")
+					physicsShape = PSHAPE_CONVEX_HULL;
+				else if(physicsShapeStr == "MESH")
+					physicsShape = PSHAPE_MESH;
+			}
+			else if(atrName == "lType"){
+				lightTypeStr = attr->value();
+				if(lightTypeStr == "POINT")
+					lightType = Ogre::Light::LightTypes::LT_POINT;
+				else if(lightTypeStr == "SPOT")
+					lightType = Ogre::Light::LightTypes::LT_SPOTLIGHT;
 			}
 		}
 		std::cout << "PUTTING A MESH DOWN!" << std::endl;
-		entities.push_back(new GameEntity(pos,rot,name,physicsType,entityType,mesh));
+		switch(entityType){
+		case ETYPE_MESH:
+			entities.push_back(new GameObject(pos,rot,name,physicsShape,mass,entityType,mesh));
+			break;
+		case ETYPE_LAMP:
+			entities.push_back(new GameLight(pos,rot,name,lightType));
+			break;
+		}
 		XMLEntityNode = XMLEntityNode->next_sibling();
 	}
 	GameEntity *ent = entities[0];

@@ -21,6 +21,7 @@ class ZombieClient : public Ogre::WindowEventListener, public Ogre::FrameListene
 		bool go();
 
 		Ogre::SceneManager *mSceneMgr;
+		btDiscreteDynamicsWorld* pDynamicsWorld;
 		std::vector<GameEntity*> entities;
 		std::vector<GameEntity*> physicsEntities;
 	private:
@@ -37,8 +38,6 @@ class ZombieClient : public Ogre::WindowEventListener, public Ogre::FrameListene
 		btCollisionDispatcher* pDispatcher;
 		btDefaultCollisionConfiguration* pCollisionConfiguration;
 		btSequentialImpulseConstraintSolver* pSolver;
-		btDiscreteDynamicsWorld* pDynamicsWorld;
-		btRigidBody *boxBody;
 
 		void createScene();
 		void loadLevel();

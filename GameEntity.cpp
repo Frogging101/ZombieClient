@@ -1,4 +1,3 @@
-#include "GameEntity.h"
 #include "main.h"
 
 /*GameEntity::GameEntity(Ogre::Vector3 pos, Ogre::Vector3 rot, std::string name, int physicsType, int entityType,std::string mesh){
@@ -23,7 +22,8 @@
 	}
 }*/
 
-GameObject::GameObject(Ogre::Vector3 pos, Ogre::Vector3 rot, std::string name, int physicsType, int physicsShape, int entityType,std::string mesh){
+GameObject::GameObject(Ogre::Vector3 pos, Ogre::Vector3 rot, std::string name, 
+	int physicsShape, float mass, int entityType,std::string mesh){
 	Ogre::Vector3 size;
 	
 	this->entityType = ETYPE_MESH;
@@ -65,6 +65,9 @@ GameObject::GameObject(Ogre::Vector3 pos, Ogre::Vector3 rot, std::string name, i
 		this->colShape = new btBvhTriangleMeshShape(getTriMesh(this->ogreEntity),true);
 		break;
 	}
+	btDefaultMotionState* pMotionState = new btDefaultMotionState(btTransform(btQuaternion(rot.y,rot.z,rot.x),btVector3(pos.x,pos.y,pos.z))); 
+	btRigidBody *pRigidBody = new btRigidBody(mass,pMotionState,this->colShape,btVector3(0,0,0));
+	game.pDynamicsWorld->addRigidBody(pRigidBody);
 }
 
 GameLight::GameLight(Ogre::Vector3 pos, Ogre::Vector3 rot, std::string name, Ogre::Light::LightTypes lightType){
