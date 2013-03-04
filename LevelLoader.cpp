@@ -113,9 +113,9 @@ void ZombieClient::loadLevel(){
 			else if(atrName == "lType"){
 				lightTypeStr = attr->value();
 				if(lightTypeStr == "POINT")
-					lightType = Ogre::Light::LightTypes::LT_POINT;
+					lightType = Ogre::Light::LT_POINT;
 				else if(lightTypeStr == "SPOT")
-					lightType = Ogre::Light::LightTypes::LT_SPOTLIGHT;
+					lightType = Ogre::Light::LT_SPOTLIGHT;
 			}
 		}
 		std::cout << "PUTTING A MESH DOWN!" << std::endl;
